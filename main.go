@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"os/user"
 )
 
 // Constants
@@ -36,17 +37,20 @@ type configuration struct {
 func (c *configuration) loadFromJSONFile(configFile string) {
 
 	// Paths where to look for config
+	var paths []string
+
 	// The home directory one has priority
-	paths := []string{
-		fmt.Sprintf("~/.%s", configFile),
+	if usr, err := user.Current(); err == nil {
+		paths = append(paths, fmt.Sprintf("%s%s.%s", usr.HomeDir, string(os.PathSeparator), configFile),)
 	}
 
 	if currentPath, err := filepath.Abs(filepath.Dir(os.Args[0])); err == nil {
-		paths = append(paths, currentPath+string(os.PathSeparator)+configFile)
+		paths = append(paths, fmt.Sprintf("%s%s%s", currentPath,string(os.PathSeparator),configFile))
 	}
 
 	configFilePath := ""
 	for _, path := range paths {
+		fmt.Println(path)
 		if _, err := os.Stat(path); err == nil {
 			configFilePath = path
 			break
