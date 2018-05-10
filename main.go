@@ -50,7 +50,6 @@ func (c *configuration) loadFromJSONFile(configFile string) {
 
 	configFilePath := ""
 	for _, path := range paths {
-		fmt.Println(path)
 		if _, err := os.Stat(path); err == nil {
 			configFilePath = path
 			break
