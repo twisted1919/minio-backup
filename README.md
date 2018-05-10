@@ -1,5 +1,5 @@
 # Minio Backup
-Small tool to backup data and send it to your minio server
+A small tool to backup data and send it to your Minio powered server  
 
 You will need GO installed in your environment  
 Following packages are needed:  
@@ -16,9 +16,8 @@ You can also download or clone this repository locally and then run it like:
 `go run main.go ...`  
 
 If there is no GO environment, download one of the ready made binaries from releases page, then:  
-1. `mv minio-backup-linux-amd64 /usr/local/bin/minio-backup`    
-2. `chmod +x minio-backup`  
-3. `sudo mv minio-backup /usr/local/bin/`  
+1. `sudo mv minio-backup-linux-amd64 /usr/local/bin/minio-backup`    
+2. `sudo chmod +x /usr/local/bin/minio-backup`    
 4. `minio-backup ...`  
 
 Ready made binaries are cross compiled, like:  
