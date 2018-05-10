@@ -85,7 +85,7 @@ func main() {
 	defaultConfig.loadFromJSONFile(configFileName)
 
 	// Define the variables we will use, with default on ENV variables
-	endpoint := flag.String("endpoint", defaultConfig.Endpoint, "the hostname")
+	endpoint := flag.String("endpoint", defaultConfig.Endpoint, "the endpoint")
 	accessKeyID := flag.String("access-key-id", defaultConfig.AccessKeyID, "the access key id")
 	secretAccessKey := flag.String("secret-access-key", defaultConfig.SecretAccessKey, "the secret access key")
 	bucketName := flag.String("bucket-name", defaultConfig.BucketName, "the bucket name")
