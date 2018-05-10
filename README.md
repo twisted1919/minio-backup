@@ -52,7 +52,7 @@ either in your home directory or in same directory with the `minio-backup` binar
 }
 ```
 If you put the config file in your home directory, it should be named `.minio-backup-config.json`.  
-If you put the config file in your home directory, it should be named `minio-backup-config.json`.  
+If you put the config file in same directory with the binary, it should be named `minio-backup-config.json`.  
  
 Links:  
 https://golang.org/doc/install  
