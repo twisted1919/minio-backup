@@ -25,6 +25,7 @@ Ready made binaries are cross compiled, like:
 
 ### Options  
 Following options are available:  
+
 | CLI Flag  | Config file | Default | Required | Details |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
 | endpoint  | endpoint  | none  |  yes | your minio host address  |
@@ -45,8 +46,8 @@ either in your home directory or in same directory with the `minio-backup` binar
 {
     "endpoint": "...",
     "access-key-id": "...",
-    "secret-access-key": "..."
-    ...
+    "secret-access-key": "...",
+    "...": "..."
 }
 ```
  
