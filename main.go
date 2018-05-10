@@ -169,7 +169,7 @@ func main() {
 	}
 
 	// Make sure we only keep latest X backups
-	if len(objects) >= *maxBackups {
+	if len(objects) >= config.MaxBackups {
 		objects = objects[len(objects)-3 : 3]
 		for _, object := range objects {
 			err = minioClient.RemoveObject(config.BucketName, object.Key)
