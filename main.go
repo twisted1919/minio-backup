@@ -39,11 +39,12 @@ func (c *configuration) loadFromJSONFile(configFile string) {
 	// Paths where to look for config
 	var paths []string
 
-	// The home directory one has priority
+	// The home directory has priority
 	if usr, err := user.Current(); err == nil {
 		paths = append(paths, fmt.Sprintf("%s%s.%s", usr.HomeDir, string(os.PathSeparator), configFile),)
 	}
 
+	// The current directory
 	if currentPath, err := filepath.Abs(filepath.Dir(os.Args[0])); err == nil {
 		paths = append(paths, fmt.Sprintf("%s%s%s", currentPath,string(os.PathSeparator),configFile))
 	}
