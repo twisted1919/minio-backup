@@ -39,12 +39,12 @@ Following options are available:
 | backup-prefix  | backup-prefix  | backup- | no | the prefix for the backup files  |
 | backup-folder  | backup-folder  | none | yes | the folder to backup, absolute path  |  
 | smtp-hostname  | smtp-hostname  | none | no | the hostname used for the smtp server  |  
-| smtp-port  | smtp-port  | none | none | the port used for the smtp server  |  
+| smtp-port  | smtp-port  | 25 | no | the port used for the smtp server  |  
 | smtp-username  | smtp-username  | none | no | the username used for the smtp server  |  
 | smtp-password  | smtp-password  | none | no | the password used for the smtp server  |  
 | smtp-from-email  | smtp-from-email  | none | no | the FROM email used for the smtp server  |  
-| notify-success  | notify-success  | none | no | whether to notify on success messages  |  
-| notify-error  | notify-error  | none | no | whether to notify on error messages  |  
+| notify-success  | notify-success  | false | no | whether to notify on success messages  |  
+| notify-error  | notify-error  | false | no | whether to notify on error messages  |  
 | notify-email  | notify-email  | none | no | to whom to send the email notification  |  
 
 You can pass above options as command line flags, i.e:

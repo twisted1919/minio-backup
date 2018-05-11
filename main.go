@@ -257,19 +257,19 @@ func main() {
 	}
 
 	if len(strings.TrimSpace(config.AccessKeyID)) == 0 {
-		res.message(newResultMessage(resultInfo, "Please specify a access-key-id: --access-key-id=..."))
+		res.message(newResultMessage(resultInfo, "Please specify a access-key-id: --access-key-id=...")).fatal()
 	}
 
 	if len(strings.TrimSpace(config.SecretAccessKey)) == 0 {
-		res.message(newResultMessage(resultInfo, "Please specify a secret-access-key: --secret-access-key=..."))
+		res.message(newResultMessage(resultInfo, "Please specify a secret-access-key: --secret-access-key=...")).fatal()
 	}
 
 	if len(strings.TrimSpace(config.BucketName)) == 0 {
-		res.message(newResultMessage(resultInfo, "Please specify a bucket-name: --bucket-name=..."))
+		res.message(newResultMessage(resultInfo, "Please specify a bucket-name: --bucket-name=...")).fatal()
 	}
 
 	if len(strings.TrimSpace(config.BackupFolder)) == 0 {
-		res.message(newResultMessage(resultInfo, "Please specify a backup-folder: --backup-folder=..."))
+		res.message(newResultMessage(resultInfo, "Please specify a backup-folder: --backup-folder=...")).fatal()
 	}
 
 	// if the backup folder does not exist
