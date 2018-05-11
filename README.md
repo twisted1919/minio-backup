@@ -5,6 +5,7 @@ You will need GO installed in your environment
 Following packages are needed:  
 `go get github.com/minio/minio-go`  
 `go get github.com/mholt/archiver`  
+`go get gopkg.in/gomail.v2`  
 
 ### RUN  
 If you already have a GO environment in place, easiest way is to install it like:  
@@ -37,6 +38,14 @@ Following options are available:
 | max-backups  | max-backups  | 5 | no  | how many backups to keep  |
 | backup-prefix  | backup-prefix  | backup- | no | the prefix for the backup files  |
 | backup-folder  | backup-folder  | none | yes | the folder to backup, absolute path  |  
+| smtp-hostname  | smtp-hostname  | none | no | the hostname used for the smtp server  |  
+| smtp-port  | smtp-port  | none | none | the port used for the smtp server  |  
+| smtp-username  | smtp-username  | none | no | the username used for the smtp server  |  
+| smtp-password  | smtp-password  | none | no | the password used for the smtp server  |  
+| smtp-from-email  | smtp-from-email  | none | no | the FROM email used for the smtp server  |  
+| notify-success  | notify-success  | none | no | whether to notify on success messages  |  
+| notify-error  | notify-error  | none | no | whether to notify on error messages  |  
+| notify-email  | notify-email  | none | no | to whom to send the email notification  |  
 
 You can pass above options as command line flags, i.e:
 `minio-backup --endpoint="..." --access-key-id="..."`   
