@@ -169,23 +169,25 @@ func (r *result) email() *result {
 		hostname = name
 	}
 
+	subject := fmt.Sprintf("[%s]: Backup status", hostname)
+	message := ""
+
 	var messages []string
 	for _, m := range r.messages {
 		messages = append(messages, fmt.Sprintf("%s %s: %s", m.timestamp, strings.ToUpper(m.messageType), m.message))
 	}
+	message = strings.Join(messages, "<br />")
 
 	m := gomail.NewMessage()
 	m.SetHeader("From", r.config.SmtpFromEmail)
 	m.SetHeader("To", r.config.NotifyEmail)
-	m.SetHeader("Subject", fmt.Sprintf("[%s]: Backup status", hostname))
-	m.SetBody("text/html", strings.Join(messages, "<br />"))
+	m.SetHeader("Subject", subject)
+	m.SetBody("text/html", message)
 
 	d := gomail.NewDialer(r.config.SmtpHostname, r.config.SmtpPort, r.config.SmtpUsername, r.config.SmtpPassword)
 	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 
-	if err := d.DialAndSend(m); err != nil {
-		fmt.Println(err)
-	}
+	d.DialAndSend(m)
 
 	return r
 }
