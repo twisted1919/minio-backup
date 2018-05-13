@@ -5,9 +5,8 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/mholt/archiver"
 	"github.com/minio/minio-go"
-	gomail "gopkg.in/gomail.v2"
+	"gopkg.in/gomail.v2"
 	"io/ioutil"
 	"log"
 	"os"
@@ -15,14 +14,15 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"github.com/mholt/archiver"
 )
 
 // Constants
 const (
 	configFileName = "minio-backup-config.json"
-	resultSuccess = "success"
-	resultError = "error"
-	resultInfo = "info"
+	resultSuccess  = "success"
+	resultError    = "error"
+	resultInfo     = "info"
 )
 
 // Main configuration struct
@@ -34,9 +34,9 @@ type configuration struct {
 	UseSSL          bool   `json:"ssl"`
 	Location        string `json:"location"`
 
-	MaxBackups      int    `json:"max-backups"`
-	BackupPrefix    string `json:"backup-prefix"`
-	BackupFolder    string `json:"backup-folder"`
+	MaxBackups   int    `json:"max-backups"`
+	BackupPrefix string `json:"backup-prefix"`
+	BackupFolder string `json:"backup-folder"`
 
 	SmtpHostname  string `json:"smtp-hostname"`
 	SmtpPort      int    `json:"smtp-port"`
@@ -169,18 +169,16 @@ func (r *result) email() *result {
 		hostname = name
 	}
 
-	subject := fmt.Sprintf("[%s]: Backup status", hostname)
-	message := ""
+	var messages []string
 	for _, m := range r.messages {
-		message += fmt.Sprintf("%s %s: %s<br />", m.timestamp, strings.ToUpper(m.messageType), m.message)
+		messages = append(messages, fmt.Sprintf("%s %s: %s", m.timestamp, strings.ToUpper(m.messageType), m.message))
 	}
-	message = strings.Trim(message, "<br />")
 
 	m := gomail.NewMessage()
 	m.SetHeader("From", r.config.SmtpFromEmail)
 	m.SetHeader("To", r.config.NotifyEmail)
-	m.SetHeader("Subject", subject)
-	m.SetBody("text/html", message)
+	m.SetHeader("Subject", fmt.Sprintf("[%s]: Backup status", hostname))
+	m.SetBody("text/html", strings.Join(messages, "<br />"))
 
 	d := gomail.NewDialer(r.config.SmtpHostname, r.config.SmtpPort, r.config.SmtpUsername, r.config.SmtpPassword)
 	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
@@ -199,57 +197,37 @@ func main() {
 	defaultConfig := newConfiguration()
 	defaultConfig.loadFromJSONFile(configFileName)
 
-	// Define the variables we will use, with default on ENV variables
-	endpoint := flag.String("endpoint", defaultConfig.Endpoint, "the endpoint")
-	accessKeyID := flag.String("access-key-id", defaultConfig.AccessKeyID, "the access key id")
-	secretAccessKey := flag.String("secret-access-key", defaultConfig.SecretAccessKey, "the secret access key")
-	bucketName := flag.String("bucket-name", defaultConfig.BucketName, "the bucket name")
-	useSSL := flag.Bool("ssl", defaultConfig.UseSSL, "whether to use ssl")
-	location := flag.String("location", defaultConfig.Location, "the location name")
+	// Main config object
+	config := newConfiguration()
 
-	maxBackups := flag.Int("max-backups", defaultConfig.MaxBackups, "maximum number of backups to keep")
-	backupPrefix := flag.String("backup-prefix", defaultConfig.BackupPrefix, "backup prefix")
-	backupFolder := flag.String("backup-folder", defaultConfig.BackupFolder, "the folder to backup")
-
-	smtpHostname := flag.String("smtp-hostname", defaultConfig.SmtpHostname, "the hostname used for the smtp server")
-	smtpPort := flag.Int("smtp-port", defaultConfig.SmtpPort, "the port used for the smtp server")
-	smtpUsername := flag.String("smtp-username", defaultConfig.SmtpUsername, "the username used for the smtp server")
-	smtpPassword := flag.String("smtp-password", defaultConfig.SmtpPassword, "the password used for the smtp server")
-	smtpFromEmail := flag.String("smtp-from-email", defaultConfig.SmtpFromEmail, "the FROM email used for the smtp server")
-
-	notifySuccess := flag.Bool("notify-success", defaultConfig.NotifySuccess, "whether to notify on success messages")
-	notifyError := flag.Bool("notify-error", defaultConfig.NotifyError, "whether to notify on error messages")
-	notifyEmail := flag.String("notify-email", defaultConfig.NotifyEmail, "to whom to send the email notification")
-
-	flag.Parse()
-
-	config := &configuration{
-		Endpoint:        *endpoint,
-		AccessKeyID:     *accessKeyID,
-		SecretAccessKey: *secretAccessKey,
-		BucketName:      *bucketName,
-		UseSSL:          *useSSL,
-		Location:        *location,
-
-		MaxBackups:      *maxBackups,
-		BackupPrefix:    *backupPrefix,
-		BackupFolder:    *backupFolder,
-
-		SmtpHostname:    *smtpHostname,
-		SmtpPort:        *smtpPort,
-		SmtpUsername:    *smtpUsername,
-		SmtpPassword:    *smtpPassword,
-		SmtpFromEmail:   *smtpFromEmail,
-
-		NotifySuccess:   *notifySuccess,
-		NotifyError:     *notifyError,
-		NotifyEmail:     *notifyEmail,
-	}
-
-	// create the result object which we will send at the end
+	// Create the result object
 	res := &result{
 		config: config,
 	}
+
+	// Define the variables we will use, with default on ENV variables
+	flag.StringVar(&config.Endpoint, "endpoint", defaultConfig.Endpoint, "the endpoint")
+	flag.StringVar(&config.AccessKeyID, "access-key-id", defaultConfig.AccessKeyID, "the access key id")
+	flag.StringVar(&config.SecretAccessKey, "secret-access-key", defaultConfig.SecretAccessKey, "the secret access key")
+	flag.StringVar(&config.BucketName, "bucket-name", defaultConfig.BucketName, "the bucket name")
+	flag.BoolVar(&config.UseSSL, "ssl", defaultConfig.UseSSL, "whether to use ssl")
+	flag.StringVar(&config.Location, "location", defaultConfig.Location, "the location name")
+
+	flag.IntVar(&config.MaxBackups, "max-backups", defaultConfig.MaxBackups, "maximum number of backups to keep")
+	flag.StringVar(&config.BackupPrefix, "backup-prefix", defaultConfig.BackupPrefix, "backup prefix")
+	flag.StringVar(&config.BackupFolder, "backup-folder", defaultConfig.BackupFolder, "the folder to backup")
+
+	flag.StringVar(&config.SmtpHostname, "smtp-hostname", defaultConfig.SmtpHostname, "the hostname used for the smtp server")
+	flag.IntVar(&config.SmtpPort, "smtp-port", defaultConfig.SmtpPort, "the port used for the smtp server")
+	flag.StringVar(&config.SmtpUsername, "smtp-username", defaultConfig.SmtpUsername, "the username used for the smtp server")
+	flag.StringVar(&config.SmtpPassword, "smtp-password", defaultConfig.SmtpPassword, "the password used for the smtp server")
+	flag.StringVar(&config.SmtpFromEmail, "smtp-from-email", defaultConfig.SmtpFromEmail, "the FROM email used for the smtp server")
+
+	flag.BoolVar(&config.NotifySuccess, "notify-success", defaultConfig.NotifySuccess, "whether to notify on success messages")
+	flag.BoolVar(&config.NotifyError, "notify-error", defaultConfig.NotifyError, "whether to notify on error messages")
+	flag.StringVar(&config.NotifyEmail, "notify-email", defaultConfig.NotifyEmail, "to whom to send the email notification")
+
+	flag.Parse()
 
 	// Some basic checks before anything else
 	if len(strings.TrimSpace(config.Endpoint)) == 0 {
@@ -286,8 +264,7 @@ func main() {
 	}
 
 	// Create the bucket if it does not exists
-	err = minioClient.MakeBucket(config.BucketName, config.Location)
-	if err != nil {
+	if err = minioClient.MakeBucket(config.BucketName, config.Location); err != nil {
 		// Check to see if we already own this bucket (which happens if you run this twice)
 		exists, err := minioClient.BucketExists(config.BucketName)
 		if err == nil && exists {
@@ -333,8 +310,7 @@ func main() {
 	res.message(newResultMessage(resultInfo, fmt.Sprintf("Creating: %s which will contain the contents of: %s", tmpFilePath, config.BackupFolder)))
 
 	// And make the zip
-	err = archiver.Zip.Make(tmpFilePath, []string{config.BackupFolder})
-	if err != nil {
+	if err = archiver.Zip.Make(tmpFilePath, []string{config.BackupFolder}); err != nil {
 		res.message(newResultMessage(resultError, err.Error())).email().fatal()
 	}
 
@@ -348,8 +324,7 @@ func main() {
 	res.message(newResultMessage(resultSuccess, fmt.Sprintf("Successfully uploaded %s of size %d", archiveName, n)))
 
 	// Remove created archive
-	err = os.Remove(tmpFilePath)
-	if err != nil {
+	if err = os.Remove(tmpFilePath); err != nil {
 		res.message(newResultMessage(resultError, err.Error())).email().fatal()
 	}
 
